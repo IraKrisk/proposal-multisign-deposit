@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Turbopack writes env values into its own build cache (`*.sst` files), which
+  # trips Netlify's secrets scanning on STRIPE_WEBHOOK_SECRET. The cache is a
+  # build artifact and is never published to the CDN, so exclude it from the
+  # scan rather than weakening the scan itself.
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/.next/cache/**,.next/cache/**"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Client proposal links must not be indexed.
+[[headers]]
+  for = "/p/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

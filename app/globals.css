@@ -1,0 +1,520 @@
+@import "tailwindcss";
+
+/* --- Base palette — each colour declared ONCE, as RGB channels so it can
+       be used solid via rgb(...) or tinted via rgba(..., a). ---------- */
+:root {
+  --white-rgb: 255, 255, 255;
+  --slate-rgb: 51, 65, 73;
+  --red-rgb: 139, 0, 0;
+  --white: rgb(var(--white-rgb));
+  --slate: rgb(var(--slate-rgb));
+  --red: rgb(var(--red-rgb));
+
+  /* Light theme (default) — slate at four strengths */
+  --bg: var(--white);
+  --text: var(--slate);
+  --muted: #68727a; /* solid slate-grey, 4.9:1 on white — passes WCAG AA */
+  --hair: rgba(var(--slate-rgb), 0.12);
+  --fill: rgba(var(--slate-rgb), 0.04);
+  --hl: var(--red);
+  --cta-edge: transparent;
+  --mark-line: var(--slate);
+
+  /* faint white for the footer identity line on the slate surface */
+  --footer-faint: rgba(var(--white-rgb), 0.56);
+
+  /* Straight from the brand token block. The -loaded variables come from
+     next/font in app/layout.tsx and carry the real IBM Plex files. */
+  --font-sans: var(--font-sans-loaded), "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: var(--font-mono-loaded), "IBM Plex Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: var(--slate);
+  --text: var(--white);
+  --muted: rgba(var(--white-rgb), 0.65);
+  --hair: rgba(var(--white-rgb), 0.12);
+  --fill: rgba(var(--white-rgb), 0.07);
+  --hl: var(--white);
+  --cta-edge: #a3abb0; /* one-off edge grey */
+  --mark-line: var(--white);
+}
+
+/*
+  The app's own names, expressed entirely in the palette above. Nothing here
+  introduces a colour: every value resolves to white, slate, red, or a tint of
+  one of them. Both surfaces sit on the same slate, as the site does.
+*/
+:root {
+  --app-bg: var(--bg);
+  --app-panel: var(--fill);
+  --app-panel-2: var(--fill);
+  --app-border: var(--hair);
+  --app-fg: var(--text);
+  --app-muted: var(--muted);
+  --app-accent: var(--red);
+  --app-accent-hover: var(--red);
+  --app-accent-fg: var(--white);
+  /* No status hues exist in the palette, so status reads through weight
+     rather than colour. */
+  --app-good: var(--text);
+  --app-warn: var(--muted);
+  --app-bad: var(--red);
+
+  --doc-bg: var(--bg);
+  --doc-panel: var(--fill);
+  --doc-panel-2: var(--fill);
+  --doc-fg: var(--text);
+  --doc-muted: var(--muted);
+  --doc-rule: var(--hair);
+  --doc-accent: var(--red);
+  --doc-accent-bright: var(--red);
+  --doc-accent-deep: var(--red);
+  --doc-accent-soft: var(--fill);
+}
+
+@theme inline {
+  --color-app-bg: var(--app-bg);
+  --color-app-panel: var(--app-panel);
+  --color-app-panel-2: var(--app-panel-2);
+  --color-app-border: var(--app-border);
+  --color-app-fg: var(--app-fg);
+  --color-app-muted: var(--app-muted);
+  --color-app-accent: var(--app-accent);
+  --color-app-good: var(--app-good);
+  --color-app-warn: var(--app-warn);
+  --color-app-bad: var(--app-bad);
+
+  --color-doc-bg: var(--doc-bg);
+  --color-doc-panel: var(--doc-panel);
+  --color-doc-panel-2: var(--doc-panel-2);
+  --color-doc-fg: var(--doc-fg);
+  --color-doc-muted: var(--doc-muted);
+  --color-doc-rule: var(--doc-rule);
+  --color-doc-accent: var(--doc-accent);
+  --color-doc-accent-bright: var(--doc-accent-bright);
+  --color-doc-accent-deep: var(--doc-accent-deep);
+  --color-doc-accent-soft: var(--doc-accent-soft);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- document surface ---------------------------------------------------- */
+
+.doc {
+  background: var(--doc-bg);
+  color: var(--doc-fg);
+}
+
+/*
+  Display type is the same family as body text, differing only in weight and
+  size. The family is the brand's, not a lookalike chosen here.
+*/
+.doc-display {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/*
+  The red heading bar. Flat, matching the section-title fields in the editor —
+  the deck's bevelled gradient and chevron read as dated on screen.
+*/
+.doc-banner {
+  position: relative;
+  background: var(--red);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px -3px var(--hair);
+}
+
+.doc-prose {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--doc-fg);
+}
+
+.doc-prose p {
+  margin: 0 0 1.05em;
+  max-width: 62ch;
+}
+
+.doc-prose p:last-child {
+  margin-bottom: 0;
+}
+
+.doc-prose ul {
+  margin: 0 0 1.05em;
+  padding: 0;
+  list-style: none;
+  max-width: 62ch;
+}
+
+.doc-prose li {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 0.6em;
+}
+
+.doc-prose li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  /* Level with the cap top of the first letter. */
+  top: 0.45em;
+  width: 14px;
+  height: 2px;
+  background: var(--red);
+  /* A faint edge under the line, not a second stripe. */
+  box-shadow: 0 2px 0 var(--hair);
+}
+
+/* The timeline reads as a sequence, not a list of separate points, so it runs
+   without markers. */
+#timeline .doc-prose li::before {
+  content: none;
+}
+
+#timeline .doc-prose li {
+  padding-left: 0;
+}
+
+.doc-prose strong {
+  font-weight: 650;
+  color: var(--doc-fg);
+}
+
+/* --- signature ------------------------------------------------------------ */
+
+/*
+  The typed name is the signature, so it should read as one rather than as a
+  form field: a wide rule to sign on, and a hand-written face.
+
+  Set in Caveat, loaded from the layout as a real font file so it renders the
+  same on every device. It is deliberately the only place in the app that uses
+  a face outside the brand's IBM Plex system, because a signature is
+  conventionally hand-written.
+*/
+.signature-field {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hair);
+  border-radius: 0;
+  padding: 0.35rem 0.25rem 0.6rem;
+  color: var(--text);
+  font-family: var(--font-signature), cursive;
+  font-size: 2.1rem;
+  line-height: 1.35;
+  outline: none;
+  transition: border-color 120ms ease;
+}
+
+.signature-field::placeholder {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.signature-field:focus {
+  border-bottom-color: var(--red);
+}
+
+.signature-canvas {
+  width: 100%;
+  height: 150px;
+  display: block;
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  background: var(--fill);
+  cursor: crosshair;
+}
+
+.signature-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0.35rem 0.1rem;
+  margin-right: 1.4rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.signature-tab:hover {
+  color: var(--text);
+}
+
+.signature-tab.is-selected {
+  color: var(--text);
+  border-bottom-color: var(--red);
+}
+
+.signature-drop {
+  border: 1px dashed var(--hair);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.signature-swatch {
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  background: transparent;
+  padding: 0.5rem 0.4rem;
+  color: var(--text);
+  font-size: 1.15rem;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.signature-swatch:hover {
+  border-color: var(--muted);
+}
+
+.signature-swatch.is-selected {
+  border-color: var(--red);
+  background: var(--fill);
+}
+
+/* --- form primitives (app surface) --------------------------------------- */
+
+/* A native dropdown list is painted by the operating system, not by the page,
+   so it does not inherit .field and came out as white text on white. */
+.field option,
+select option {
+  background: var(--slate);
+  color: var(--white);
+}
+
+.field {
+  width: 100%;
+  background: var(--app-panel-2);
+  border: 1px solid var(--app-border);
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  color: var(--app-fg);
+  font-size: 0.9375rem;
+  outline: none;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+/*
+  Chrome paints its own colour over any field it has autofilled, overriding
+  whatever we set. The inset shadow is the only way to repaint it, and the long
+  transition delay stops it flashing back on focus. Applied to every input, not
+  just .field, because the signing panel styles its own.
+*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg) inset;
+  box-shadow: 0 0 0 1000px var(--bg) inset;
+  caret-color: var(--text);
+  transition: background-color 100000s ease-in-out 0s;
+}
+
+.field::placeholder {
+  color: var(--muted);
+}
+
+/* Section-title inputs, so headings read as headings in the editor list. */
+/* Section bodies are long-form text and need more room than a one-line input. */
+textarea.field {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.field-heading {
+  background: var(--red);
+  border-color: var(--hair);
+}
+
+.field-heading:focus {
+  border-color: var(--app-accent-hover);
+}
+
+.field:focus {
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent) 22%, transparent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 550;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--app-accent);
+  color: var(--app-accent-fg);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--app-accent-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--app-border);
+  color: var(--app-fg);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--app-panel-2);
+}
+
+/* --- success animation --------------------------------------------------- */
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes card-in {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ring-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes tick-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes halo {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-overlay {
+  animation: overlay-in 260ms ease-out both;
+}
+.anim-card {
+  animation: card-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-ring {
+  animation: ring-pop 620ms cubic-bezier(0.34, 1.56, 0.64, 1) 120ms both;
+}
+.anim-halo {
+  animation: halo 1400ms ease-out 320ms infinite;
+}
+.anim-tick {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: tick-draw 460ms cubic-bezier(0.65, 0, 0.35, 1) 420ms forwards;
+}
+.anim-rise {
+  animation: rise 500ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-overlay,
+  .anim-card,
+  .anim-ring,
+  .anim-halo,
+  .anim-tick,
+  .anim-rise {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* --- print --------------------------------------------------------------- */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  /*
+    Keep the brand when printing or saving to PDF. Forcing a white ground here
+    would leave white type on white paper.
+  */
+  .doc {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
